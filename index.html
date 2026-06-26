@@ -8,10 +8,11 @@
        (function(){ emailjs.init("nhattan"); })();
     </script>
     <style>
-        body { font-family: sans-serif; background: #0f172a; color: white; text-align: center; padding: 20px; }
+        body { font-family: sans-serif; background: #0f172a; color: white; text-align: center; padding: 20px; transition: background 0.3s; }
         .card { background: #1e293b; padding: 20px; border-radius: 20px; margin: 20px 0; }
         #vibration { font-size: 50px; font-weight: bold; color: #38bdf8; }
-        button { background: #38bdf8; border: none; padding: 20px; border-radius: 15px; font-weight: bold; width: 100%; font-size: 18px; }
+        canvas { background: white; border-radius: 15px; padding: 10px; width: 100%; max-width: 400px; }
+        button { background: #38bdf8; border: none; padding: 20px; border-radius: 15px; font-weight: bold; width: 100%; font-size: 18px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -20,10 +21,17 @@
         <p>CƯỜNG ĐỘ RUNG (G)</p>
         <div id="vibration">0.00</div>
     </div>
+    <canvas id="chart"></canvas>
+    <br><br>
     <button onclick="requestPermission()">KÍCH HOẠT CẢM BIẾN</button>
 
     <script>
-        let isSending = false;
+        const ctx = document.getElementById('chart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: { labels: Array(20).fill(''), datasets: [{ data: Array(20).fill(0), borderColor: '#38bdf8', tension: 0.4 }] },
+            options: { scales: { y: { min: 0, max: 20 } } }
+        });
 
         function requestPermission() {
             if (typeof DeviceMotionEvent.requestPermission === 'function') {
@@ -32,26 +40,29 @@
         }
 
         function handleMotion(e) {
-            let val = Math.sqrt(e.acceleration.x**2 + e.acceleration.y**2 + e.acceleration.z**2);
+            let acc = e.acceleration;
+            let val = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
             document.getElementById('vibration').innerHTML = val.toFixed(1);
+            
+            chart.data.datasets[0].data.push(val);
+            chart.data.datasets[0].data.shift();
+            chart.update('none');
 
             if (val > 15) { 
                 document.body.style.background = "#7f1d1d";
-                window.navigator.vibrate([500, 50, 500]);
-                
-                if (!isSending) {
-                    isSending = true;
-                    // NÍ THAY CHỮ "template_..." DƯỚI ĐÂY BẰNG MÃ TRONG HÌNH CỦA NÍ
-                    emailjs.send("service_tan", "CẢNH BÁO RUNG ĐỘNG! Nhật Tân đang gặp nguy hiểm hãy liên hệ gấp", {
-                        vibration_level: val.toFixed(1)
-                    }).then(() => {
-                        alert("Cảnh báo đã gửi về email!");
-                        setTimeout(() => { isSending = false; }, 10000);
-                    });
-                }
+                window.navigator.vibrate([500, 50, 500, 50, 500]);
+                sendEmailAlert(val);
             } else { 
                 document.body.style.background = "#0f172a"; 
+                window.navigator.vibrate(0);
             }
+        }
+
+        function sendEmailAlert(val) {
+            // Ní thay 'TEMPLATE_ID_CỦA_NÍ' bằng ID trong EmailJS nhé
+            emailjs.send("gmail_service", "TEMPLATE_ID_CỦA_NÍ", {
+                vibration_level: val.toFixed(1)
+            }).then(() => console.log("Đã gửi email!"));
         }
     </script>
 </body>
