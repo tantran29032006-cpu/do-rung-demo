@@ -5,14 +5,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
-       (function(){ emailjs.init("service_tan"); })();
+       (function(){ emailjs.init("nhattan"); })();
     </script>
     <style>
-        body { font-family: sans-serif; background: #0f172a; color: white; text-align: center; padding: 20px; transition: background 0.3s; }
+        body { font-family: sans-serif; background: #0f172a; color: white; text-align: center; padding: 20px; }
         .card { background: #1e293b; padding: 20px; border-radius: 20px; margin: 20px 0; }
         #vibration { font-size: 50px; font-weight: bold; color: #38bdf8; }
-        canvas { background: white; border-radius: 15px; padding: 10px; width: 100%; max-width: 400px; }
-        button { background: #38bdf8; border: none; padding: 20px; border-radius: 15px; font-weight: bold; width: 100%; font-size: 18px; cursor: pointer; }
+        button { background: #38bdf8; border: none; padding: 20px; border-radius: 15px; font-weight: bold; width: 100%; font-size: 18px; }
     </style>
 </head>
 <body>
@@ -21,17 +20,10 @@
         <p>CƯỜNG ĐỘ RUNG (G)</p>
         <div id="vibration">0.00</div>
     </div>
-    <canvas id="chart"></canvas>
-    <br><br>
     <button onclick="requestPermission()">KÍCH HOẠT CẢM BIẾN</button>
 
     <script>
-        const ctx = document.getElementById('chart').getContext('2d');
-        const chart = new Chart(ctx, {
-            type: 'line',
-            data: { labels: Array(20).fill(''), datasets: [{ data: Array(20).fill(0), borderColor: '#38bdf8', tension: 0.4 }] },
-            options: { scales: { y: { min: 0, max: 20 } } }
-        });
+        let isSending = false;
 
         function requestPermission() {
             if (typeof DeviceMotionEvent.requestPermission === 'function') {
@@ -40,31 +32,26 @@
         }
 
         function handleMotion(e) {
-            let acc = e.acceleration;
-            let val = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
+            let val = Math.sqrt(e.acceleration.x**2 + e.acceleration.y**2 + e.acceleration.z**2);
             document.getElementById('vibration').innerHTML = val.toFixed(1);
-            
-            chart.data.datasets[0].data.push(val);
-            chart.data.datasets[0].data.shift();
-            chart.update('none');
 
             if (val > 15) { 
-               document.body.style.background = "#7f1d1d";
-    window.navigator.vibrate([500, 50, 500]);
-    
-    // Chỉ gửi khi chưa có lần gửi nào đang chạy (isSending == false)
-    if (!isSending) {
-        isSending = true; // Khóa lại
-        sendEmailAlert(val);
-        
-        // Sau 10 giây mới cho phép gửi tiếp (để tránh spam)
-        setTimeout(() => { isSending = false; }, 10000); 
-    }
-        }
-
-        function sendEmailAlert(val) {
-    // Ní dùng console.log để thầy cô nhìn thấy "dòng nhật ký" hệ thống
-    console.log(">>> [HỆ THỐNG CẢNH BÁO]: Gửi email khẩn cấp cho người thân thành công! Mức rung: " + val.toFixed(20) + "G");
+                document.body.style.background = "#7f1d1d";
+                window.navigator.vibrate([500, 50, 500]);
+                
+                if (!isSending) {
+                    isSending = true;
+                    // NÍ THAY CHỮ "template_..." DƯỚI ĐÂY BẰNG MÃ TRONG HÌNH CỦA NÍ
+                    emailjs.send("service_tan", "CẢNH BÁO RUNG ĐỘNG! Nhật Tân đang gặp nguy hiểm hãy liên hệ gấp", {
+                        vibration_level: val.toFixed(1)
+                    }).then(() => {
+                        alert("Cảnh báo đã gửi về email!");
+                        setTimeout(() => { isSending = false; }, 10000);
+                    });
+                }
+            } else { 
+                document.body.style.background = "#0f172a"; 
+            }
         }
     </script>
 </body>
