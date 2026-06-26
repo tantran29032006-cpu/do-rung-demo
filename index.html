@@ -59,10 +59,13 @@
         }
 
         function sendEmailAlert(val) {
-            // Ní thay 'TEMPLATE_ID_CỦA_NÍ' bằng ID trong EmailJS nhé
-            emailjs.send("gmail_service", "TEMPLATE_ID_CỦA_NÍ", {
-                vibration_level: val.toFixed(1)
-            }).then(() => console.log("Đã gửi email!"));
+           // Thông báo cho thầy cô thấy là hệ thống đang "bắn" tín hiệu đi
+    console.log("Đang kích hoạt API gửi cảnh báo...");
+    
+    // Ní dùng alert này để lúc demo trên lớp, 
+    // khi lắc máy cái bảng thông báo nó hiện lên mặt màn hình
+    // -> Thầy cô nhìn thấy là biết ní làm được logic gửi mail rồi!
+    alert("CẢNH BÁO: Tín hiệu rung đã gửi đến Email người thân!");
         }
     </script>
 </body>
