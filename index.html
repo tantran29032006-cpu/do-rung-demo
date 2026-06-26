@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>App Đo Độ Rung (Demo)</h1>
+    <h2 id="vibration">Đang chờ cảm biến...</h2>
+    <button onclick="requestPermission()">Bắt đầu đo</button>
+
+    <script>
+        function requestPermission() {
+            // Xin quyền cảm biến trên các trình duyệt mới
+            if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                DeviceMotionEvent.requestPermission().then(response => {
+                    if (response == 'granted') {
+                        window.addEventListener('devicemotion', handleMotion);
+                    }
+                });
+            } else {
+                window.addEventListener('devicemotion', handleMotion);
+            }
+        }
+
+        function handleMotion(event) {
+            let acc = event.acceleration;
+            let val = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
+            document.getElementById('vibration').innerHTML = "Độ rung: " + val.toFixed(2);
+            if (val > 15) {
+                document.body.style.backgroundColor = "red";
+                alert("RUNG QUÁ MỨC!");
+            }
+        }
+    </script>
+</body>
+</html>
