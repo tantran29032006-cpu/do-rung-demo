@@ -45,7 +45,15 @@
                 
                 // --- CẢNH BÁO RUNG ĐIỆN THOẠI ---
                 // Máy sẽ rung liên tục 200ms khi phát hiện quá ngưỡng
-                navigator.vibrate([500, 200, 500]);
+                if (val > 15) {
+    // ... phần code đổi màu cũ ...
+    
+    // Thêm dòng này để ép nó rung
+    try {
+        window.navigator.vibrate(500);
+    } catch(e) {
+        console.log("Trình duyệt chặn rung rồi ní ơi");
+    }
             } else {
                 // Trở lại trạng thái bình thường
                 document.body.style.backgroundColor = "#f0f2f5";
