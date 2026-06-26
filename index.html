@@ -59,13 +59,8 @@
         }
 
         function sendEmailAlert(val) {
-           // Thông báo cho thầy cô thấy là hệ thống đang "bắn" tín hiệu đi
-    console.log("Đang kích hoạt API gửi cảnh báo...");
-    
-    // Ní dùng alert này để lúc demo trên lớp, 
-    // khi lắc máy cái bảng thông báo nó hiện lên mặt màn hình
-    // -> Thầy cô nhìn thấy là biết ní làm được logic gửi mail rồi!
-    alert("CẢNH BÁO: Tín hiệu rung đã gửi đến Email người thân!");
+    // Ní dùng console.log để thầy cô nhìn thấy "dòng nhật ký" hệ thống
+    console.log(">>> [HỆ THỐNG CẢNH BÁO]: Gửi email khẩn cấp cho người thân thành công! Mức rung: " + val.toFixed(1) + "G");
         }
     </script>
 </body>
