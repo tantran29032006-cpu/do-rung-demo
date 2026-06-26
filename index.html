@@ -49,18 +49,22 @@
             chart.update('none');
 
             if (val > 15) { 
-                document.body.style.background = "#7f1d1d";
-                window.navigator.vibrate([500, 50, 500, 50, 500]);
-                sendEmailAlert(val);
-            } else { 
-                document.body.style.background = "#0f172a"; 
-                window.navigator.vibrate(0);
-            }
+               document.body.style.background = "#7f1d1d";
+    window.navigator.vibrate([500, 50, 500]);
+    
+    // Chỉ gửi khi chưa có lần gửi nào đang chạy (isSending == false)
+    if (!isSending) {
+        isSending = true; // Khóa lại
+        sendEmailAlert(val);
+        
+        // Sau 10 giây mới cho phép gửi tiếp (để tránh spam)
+        setTimeout(() => { isSending = false; }, 10000); 
+    }
         }
 
         function sendEmailAlert(val) {
     // Ní dùng console.log để thầy cô nhìn thấy "dòng nhật ký" hệ thống
-    console.log(">>> [HỆ THỐNG CẢNH BÁO]: Gửi email khẩn cấp cho người thân thành công! Mức rung: " + val.toFixed(1) + "G");
+    console.log(">>> [HỆ THỐNG CẢNH BÁO]: Gửi email khẩn cấp cho người thân thành công! Mức rung: " + val.toFixed(20) + "G");
         }
     </script>
 </body>
