@@ -36,11 +36,18 @@
             let acc = event.acceleration;
             let val = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
             document.getElementById('vibration').innerHTML = val.toFixed(1);
+            
             if (val > 15) {
+                // Hiệu ứng cảnh báo đỏ
                 document.body.style.backgroundColor = "#ffcdd2";
                 document.querySelector('.card').style.backgroundColor = "#ef5350";
                 document.getElementById('vibration').style.color = "white";
+                
+                // --- CẢNH BÁO RUNG ĐIỆN THOẠI ---
+                // Máy sẽ rung liên tục 200ms khi phát hiện quá ngưỡng
+                navigator.vibrate(200); 
             } else {
+                // Trở lại trạng thái bình thường
                 document.body.style.backgroundColor = "#f0f2f5";
                 document.querySelector('.card').style.backgroundColor = "white";
                 document.getElementById('vibration').style.color = "#333";
